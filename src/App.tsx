@@ -1,31 +1,13 @@
-import { useState, useEffect, FC } from "react";
+import { FC } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import axios from "axios";
 import Home from "./pages/Home";
 import Chats from "./pages/Chats";
-import IChat from "./interfaces/IChat";
-import Navbar from "./components/Navbar";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Navbar from "./components/Navbar/Navbar";
+import Logout from "./pages/Logout";
 
 const App: FC = (): JSX.Element => {
-  const [chats, setChats] = useState<IChat[]>([]);
-
-  useEffect(() => {
-    let mounted = true;
-    axios
-      .get<IChat[]>("http://localhost:3001/api/v1/chat")
-      .then((response) => {
-        if (mounted) {
-          setChats(response.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   return (
     <Router>
       <div className="App">
@@ -33,6 +15,9 @@ const App: FC = (): JSX.Element => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/chat" element={<Chats />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
       </div>
     </Router>

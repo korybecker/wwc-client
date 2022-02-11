@@ -1,19 +1,17 @@
-import React, { FC, useEffect, useState, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
+import { FC, useEffect, useState, ChangeEvent, FormEvent } from "react";
+import axios from "../axios";
 import IChat from "../interfaces/IChat";
-import Chat from "../components/Chat";
-import { hasSelectionSupport } from "@testing-library/user-event/dist/utils";
+import Chat from "../components/Chat/Chat";
 
 const Chats: FC = () => {
   const [chats, setChats] = useState<Array<IChat>>();
   const [postedIndicator, setPostedIndicator] = useState<boolean>(true);
-  const [deletedIndicator, setDeletedIndicator] = useState<boolean>(true);
   // const [createdAt, setCreatedAt] = useState<Date>(new Date());
   // const [updatedAt, setUpdatedAt] = useState<Date>(new Date());
 
   const [username, setUsername] = useState<string>("");
   const [postText, setPostText] = useState<string>("");
-  const [key, setKey] = useState<number>(50);
+  const [key, setKey] = useState<number>(500);
 
   const handleUsername = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -25,10 +23,18 @@ const Chats: FC = () => {
 
   useEffect(() => {
     let mounted = true;
+
+    const config = {
+      headers: {
+        Authorization: "Bearer ",
+      },
+    };
+
     axios
-      .get("http://localhost:3001/api/v1/chat")
+      .get("/chat", config)
       .then((response) => {
         if (mounted) {
+          console.log(response);
           setChats(response.data.chats);
         }
       })
@@ -38,19 +44,14 @@ const Chats: FC = () => {
     return () => {
       mounted = false;
     };
-  }, [postedIndicator, deletedIndicator]);
+  }, [postedIndicator]);
 
-  const createExpense = (e: FormEvent<HTMLFormElement>) => {
+  const createChat = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // setCreatedAt(new Date());
-    // setUpdatedAt(new Date());
 
     const postBody = {
-      username: username,
       key: key,
       postText: postText,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
     axios
       .post("http://localhost:3001/api/v1/chat", postBody)
@@ -79,7 +80,7 @@ const Chats: FC = () => {
             />
           );
         })}
-      <form onSubmit={createExpense}>
+      <form onSubmit={createChat} autoComplete="off">
         <div className="form-group">
           <label htmlFor="username">username</label>
           <input
